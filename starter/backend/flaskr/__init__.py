@@ -25,6 +25,10 @@ def create_app(test_config=None):
   for all available categories.
   '''
 
+  @app.route('/')
+  def index():
+    return "Hello WOrl"
+
 
   '''
   @TODO: 
