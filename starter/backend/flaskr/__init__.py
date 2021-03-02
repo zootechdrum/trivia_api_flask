@@ -18,6 +18,11 @@ def create_app(test_config=None):
   '''
   @TODO: Use the after_request decorator to set Access-Control-Allow
   '''
+  @app.after_request
+  def after_request(response):
+    response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization,true')
+    response.headers.add('Access-Control-Allow-Methods', 'GET,PATCH,POST,DELETE,OPTIONS')
+    return response
 
   '''
   @TODO: 
@@ -25,9 +30,29 @@ def create_app(test_config=None):
   for all available categories.
   '''
 
-  @app.route('/')
-  def index():
-    return "Hello WOrl"
+  @app.route('/questions', methods=['GET'])
+  def get_questions():
+    questions = Question.query.all()
+    categories = Category.query.all()
+   
+    categories_dic = {}
+
+    for count, category in enumerate(categories,1):
+      categories_dic[count] = category.type     
+
+
+    
+    page = request.args.get('page',1,type=int)
+    print(categories_dic)
+    
+    return jsonify({
+      'success': True,
+      'questions': [question.format() for question in questions],
+      'total_questions':len(questions),
+      'categories':categories_dic
+    })
+    category
+
 
 
   '''
