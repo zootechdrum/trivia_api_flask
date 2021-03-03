@@ -30,30 +30,22 @@ def create_app(test_config=None):
   for all available categories.
   '''
 
-  @app.route('/questions', methods=['GET'])
-  def get_questions():
-    questions = Question.query.all()
+  @app.route('/categories', methods=['GET'])
+  def get_categories():
+    # questions = Question.query.all()
     categories = Category.query.all()
    
     categories_dic = {}
 
     for count, category in enumerate(categories,1):
       categories_dic[count] = category.type     
-
-
-    
-    page = request.args.get('page',1,type=int)
-    print(categories_dic)
+  
+    # page = request.args.get('page',1,type=int)
+  
     
     return jsonify({
-      'success': True,
-      'questions': [question.format() for question in questions],
-      'total_questions':len(questions),
       'categories':categories_dic
     })
-    category
-
-
 
   '''
   @TODO: 
@@ -67,6 +59,33 @@ def create_app(test_config=None):
   ten questions per page and pagination at the bottom of the screen for three pages.
   Clicking on the page numbers should update the questions. 
   '''
+  @app.route('/questions', methods=['GET'])
+  def get_questions():
+    questions = Question.query.all()
+    categories = Category.query.all()
+    page = request.args.get('page',1,type=int)
+   
+    start = (page - 1) * 10
+    end = start + 10
+
+
+    categories_dic = {}
+
+    for count, category in enumerate(categories,1):
+      categories_dic[count] = category.type     
+
+    formatted_questions = [question.format() for question in questions]
+    
+    
+    return jsonify({
+      'success': True,
+      'questions': formatted_questions[start:end],
+      'total_questions':len(questions),
+      'categories':categories_dic,
+      'currentCategory':None,
+
+    })  
+  
 
   '''
   @TODO: 
