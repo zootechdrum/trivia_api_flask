@@ -4,7 +4,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 import random
 
-from models import setup_db, Question, Category
+from models import setup_db, Question, Category, db
 
 QUESTIONS_PER_PAGE = 10
 
@@ -94,6 +94,26 @@ def create_app(test_config=None):
   TEST: When you click the trash icon next to a question, the question will be removed.
   This removal will persist in the database and when you refresh the page. 
   '''
+  @app.route('/questions/<question_id>', methods=['DELETE'])
+  def delete_question(question_id):
+    question = {}
+    error= False
+    try:
+      question = Question.query.filter(Question.id == question_id).first()
+
+      if question is None:
+        abort(404)
+      question.delete()
+    except:
+      error = True
+      db.session.rollback()
+    finally:
+      db.session.close()
+
+    if error:
+      abort(422)
+    else: return jsonify({'success': True})
+      
 
   '''
   @TODO: 
@@ -120,11 +140,26 @@ def create_app(test_config=None):
   '''
   @TODO: 
   Create a GET endpoint to get questions based on category. 
-
+  @
   TEST: In the "List" tab / main screen, clicking on one of the 
   categories in the left column will cause only questions of that 
   category to be shown. 
   '''
+  @app.route('/categories/<question_category>/questions')
+  def categorical_questions(question_category):
+
+    questions = Question.query.filter(Question.category == question_category).all()
+    category = Category.query.filter(Category.id == question_category).first()
+
+    formatted_questions = [question.format() for question in questions]
+    current_category = category.format()
+
+    return jsonify({
+      'success': True,
+      'questions': formatted_questions,
+      'total_questions':len(questions),
+      'current_category':current_category
+    })  
 
 
   '''
