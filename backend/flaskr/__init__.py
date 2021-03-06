@@ -61,30 +61,38 @@ def create_app(test_config=None):
   '''
   @app.route('/questions', methods=['GET'])
   def get_questions():
-    questions = Question.query.all()
-    categories = Category.query.all()
-    page = request.args.get('page',1,type=int)
-   
-    start = (page - 1) * 10
-    end = start + 10
-
-
-    categories_dic = {}
-
-    for count, category in enumerate(categories,1):
-      categories_dic[count] = category.type     
-
-    formatted_questions = [question.format() for question in questions]
+    try:
+      questions = Question.query.all()
+      categories = Category.query.all()
+      page = request.args.get('page',1,type=int)
     
-    
-    return jsonify({
-      'success': True,
-      'questions': formatted_questions[start:end],
-      'total_questions':len(questions),
-      'categories':categories_dic,
-      'currentCategory':None,
+      start = (page - 1) * 10
+      end = start + 10
 
-    })  
+      formatted_questions = [question.format() for question in questions]
+      list_of_questions = formatted_questions[start:end]
+
+      if(len(list_of_questions) == 0):
+        abort(404)
+
+      categories_dic = {}
+
+      for count, category in enumerate(categories,1):
+        categories_dic[count] = category.type     
+
+
+      
+      
+      return jsonify({
+        'success': True,
+        'questions': list_of_questions,
+        'total_questions':len(questions),
+        'categories':categories_dic,
+        'currentCategory':None,
+
+      }) 
+    except:
+      abort(404) 
   
 
   '''
@@ -131,15 +139,17 @@ def create_app(test_config=None):
   def create_question():
     body = request.get_json()
     
-    question = body['question']
-    category = body['category']
-    answer = body['answer']
-    diff = body['difficulty']
+
 
 
     error = False
     try:
+      question = body['question']
+      category = body['category']
+      answer = body['answer']
+      diff = body['difficulty']
       question = Question(question=question, category=category, answer=answer,difficulty=diff)
+      print(question)
       question.insert()
     except:
       error = True
@@ -162,13 +172,19 @@ def create_app(test_config=None):
   only question that include that string within their question. 
   Try using the word "title" to start. 
   '''
-  @app.route('/questions', methods=['POST'])
+  @app.route('/searchQuestions', methods=['POST'])
   def search_questions():
     search_obj = request.get_json()
-    x = search_term['searchTerm']
+    search_term = search_obj['searchTerm']
+
 
     questions = Question.query.filter(Question.question.ilike("%" + search_term + "%")).all()
+
+    if search_term == '':
+      question = Question.query.all()
     formatted_questions = [question.format() for question in questions]
+
+    print(formatted_questions)
 
     return jsonify({
       'success': True,
@@ -258,7 +274,7 @@ def create_app(test_config=None):
     return jsonify({
       'success':False,
       'error':404,
-      'message':'resouce not found'
+      'message':'Resource Not Found'
     }), 404
   
   @app.errorhandler(422)
@@ -268,7 +284,7 @@ def create_app(test_config=None):
       'error':422,
       'message':'Could not processs'
     }), 422
-  
+          
   @app.errorhandler(405)
   def method_not_allowed(error):
     return jsonify({
