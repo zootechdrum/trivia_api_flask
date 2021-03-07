@@ -205,18 +205,22 @@ def create_app(test_config=None):
   @app.route('/categories/<question_category>/questions')
   def categorical_questions(question_category, methods=['GET']):
 
-    questions = Question.query.filter(Question.category == question_category).all()
-    category = Category.query.filter(Category.id == question_category).first()
+    try:
 
-    formatted_questions = [question.format() for question in questions]
-    current_category = category.format()
+      questions = Question.query.filter(Question.category == question_category).all()
+      category = Category.query.filter(Category.id == question_category).first()
 
-    return jsonify({
-      'success': True,
-      'questions': formatted_questions,
-      'total_questions':len(questions),
-      'current_category':current_category
-    })  
+      formatted_questions = [question.format() for question in questions]
+      current_category = category.format()
+
+      return jsonify({
+        'success': True,
+        'questions': formatted_questions,
+        'total_questions':len(questions),
+        'current_category':current_category
+      })
+    except:
+      abort(422)  
 
 
   '''
@@ -232,37 +236,40 @@ def create_app(test_config=None):
   '''
   @app.route('/quizzes', methods=['POST'])
   def playQuiz():
-    body = request.get_json()
-    previous_questions = body.get('previous_questions')
-    quiz_category = body.get('quiz_category')
+    try:
+      body = request.get_json()
+      previous_questions = body.get('previous_questions')
+      quiz_category = body.get('quiz_category')
 
 
-    questions = []
+      questions = []
 
-    if not quiz_category['id'] == 0:
-      questions = Question.query.filter(Question.category == quiz_category['id']).all()
-    else: 
-      questions = Question.query.all()
+      if not quiz_category['id'] == 0:
+        questions = Question.query.filter(Question.category == quiz_category['id']).all()
+      else: 
+        questions = Question.query.all()
 
-    next_question = random.choice(questions)
+      next_question = random.choice(questions)
 
 
-    flag = True
+      flag = True
 
-    while flag:
-      if next_question.id in previous_questions:
-        next_question = random.choice(questions)
-      else:
-        flag = False
+      while flag:
+        if next_question.id in previous_questions:
+          next_question = random.choice(questions)
+        else:
+          flag = False
 
-    next_question = next_question.format()
-    
+      next_question = next_question.format()
+      print(next_question)
+      
 
-    return jsonify({
-      'success': True,
-      'question': next_question
-    })
-
+      return jsonify({
+        'success': True,
+        'question': next_question
+      })
+    except:
+      abort(400)
   '''
   @TODO: 
   Create error handlers for all expected errors 
@@ -292,6 +299,14 @@ def create_app(test_config=None):
       'error':405,
       'message':'Method not allowed'
     }), 405
+  
+  @app.errorhandler(400)
+  def bad_request(error):
+    return jsonify({
+      'success':False,
+      'error':400,
+      'message':'Bad Request'
+    }), 400
   
   return app
 

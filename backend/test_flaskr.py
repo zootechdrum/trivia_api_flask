@@ -106,12 +106,57 @@ class TriviaTestCase(unittest.TestCase):
         'searchTerm' :'Because of small sausage'}
       )
         data = json.loads(res.data)
-        print(res.data)
+
+
         self.assertEqual(res.status_code, 200)
         self.assertEqual(data['success'], True)
         self.assertIs(type(data['questions']),list)
         self.assertIs(type(data['total_questions']),int)
         self.assertEqual(data['current_category'], None)
+
+    def test_question_by_categry(self):
+        res = self.client().get('/categories/1/questions')
+
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 200)
+        self.assertIs(type(data['questions']),list)
+        self.assertIs(type(data['total_questions']),int)
+        self.assertIs(type(data['current_category']),dict)
+
+    def test_get_requesting_beyond_valid_page(self):
+        res = self.client().get('/categories/100/questions')
+        data = json.loads(res.data)
+
+        self.assertEqual(res.status_code, 422)
+        self.assertEqual(data["success"], False)
+        self.assertEqual(data["message"], "Could not processs")
+
+    def test_quiz(self):
+        res = self.client().post(
+            '/quizzes',
+            json={
+                'previous_questions':[21],
+                'quiz_category':{'type':'Science','id':1}
+            },
+        )
+
+
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 200)
+        self.assertIs(type(data['question']),dict)
+
+    def test_quiz_fail(self):
+        res = self.client().post(
+            '/quizzes',
+            json={
+                'previous_questions':[1000],
+            },
+        )
+        data = json.loads(res.data)
+        self.assertEqual(res.status_code, 400)
+        self.assertEqual(data["success"], False)
+        # self.assertIs(type(data['question']),dict)
 
 
 
