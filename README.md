@@ -38,7 +38,7 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 
-<mark>The first time you run the tests, omit the dropdb command</mark>
+<span style="color:blue">The first time you run the tests, omit the dropdb command</span>
 
 
 ## Deployment N/A
