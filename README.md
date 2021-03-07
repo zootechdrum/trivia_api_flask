@@ -65,14 +65,14 @@ The API will return four error types when requsts fial:
 - 405 Method Not Allowed
 - 400 Bad Request
 
-## Example EndPoint
+## EndPoints
 
 # GET /questions
 
 - Returns a list of question, a dictonary of cateogories, the number of total questions
 - Results are paginated in groups of 10. Include a request argument to choose page number, starting from 1.
 
-- Sample ```curl http://127.0.0.1:5000/questions  ```
+- Sample ```curl http://127.0.0.1:5000/questions```
 
 ```
 {
@@ -161,6 +161,162 @@ The API will return four error types when requsts fial:
   "total_questions": 18
 }
 ```
+# GET /categories/<question_category>/questions
+- Sample ```curl http://127.0.0.1:5000/categories/1/questions```
+- Returns a list of questions,current category, and total number of questions based on the category number passed in the URL.
+- Results are paginated in groups of 10. Include a category argument to choose a category.
+```
+{
+  "current_category": {
+    "id": 1,
+    "type": "Science"
+  },
+  "questions": [
+    {
+      "answer": "The Liver",
+      "category": "1",
+      "difficulty": 4,
+      "id": 20,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Alexander Fleming",
+      "category": "1",
+      "difficulty": 3,
+      "id": 21,
+      "question": "Who discovered penicillin?"
+    },
+  ],
+  "success": true,
+  "total_questions": 9
+}
+```
+
+# GET /categories
+- Sample ```curl http://127.0.0.1:5000/categories```
+- Returns a dictonary of available categories.
+
+```
+{
+  "categories": {
+    "1": "Science",
+    "2": "Art",
+    "3": "Geography",
+    "4": "History",
+    "5": "Entertainment",
+    "6": "Sports"
+  },
+  "success": true
+}
+```
+# DELETE /questions/<question_id>
+- Sample ```curl -X "DELETE" http://127.0.0.1:5000/questions/1```
+- Returns a success message following a successful deletions of question.
+
+```
+{
+  "success": true
+}
+```
+# POST /questions
+- Sample ```curl -X POST http://127.0.0.1:5000/questions -H "Content-Type: application/json" -d "{\"question\":\"who is evil\",\"category\":\"1\",\"difficulty\":\"2\",\"answer\":\"amazon\"}"```
+- Returns a success message after a question has been added to the database. .
+  The above curl request would output the following:
+```
+{
+  "success": true
+}
+```
+
+# POST /searchTerm
+- Sample ```curl -X POST http://127.0.0.1:5000/searchQuestions -H "Content-Type:application/json" -d "{\"searchTerm\":\"what\"}"```
+- Returns a list of questions that have that search term passed in as a json object by the client.
+  The above curl request would output the following:
+```
+{
+{
+  "current_category": null,
+  "questions": [
+    {
+      "answer": "Muhammad Ali",
+      "category": "4",
+      "difficulty": 1,
+      "id": 9,
+      "question": "What boxer's original name is Cassius Clay?"
+    },
+    {
+      "answer": "Apollo 13",
+      "category": "5",
+      "difficulty": 4,
+      "id": 2,
+      "question": "What movie earned Tom Hanks his third straight Oscar nomination, in 1996?"
+    },
+    {
+      "answer": "Tom Cruise",
+      "category": "5",
+      "difficulty": 4,
+      "id": 4,
+      "question": "What actor did author Anne Rice first denounce, then praise in the role of her beloved Lestat?"
+    },
+    {
+      "answer": "Edward Scissorhands",
+      "category": "5",
+      "difficulty": 3,
+      "id": 6,
+      "question": "What was the title of the 1990 fantasy directed by Tim Burton about a young man with multi-bladed appendages?"
+    },
+    {
+      "answer": "Lake Victoria",
+      "category": "3",
+      "difficulty": 2,
+      "id": 13,
+      "question": "What is the largest lake in Africa?"
+    },
+    {
+      "answer": "Mona Lisa",
+      "category": "2",
+      "difficulty": 3,
+      "id": 17,
+      "question": "La Giaconda is better known as what?"
+    },
+    {
+      "answer": "The Liver",
+      "category": "1",
+      "difficulty": 4,
+      "id": 20,
+      "question": "What is the heaviest organ in the human body?"
+    },
+    {
+      "answer": "Blood",
+      "category": "1",
+      "difficulty": 4,
+      "id": 22,
+      "question": "Hematology is a branch of medicine involving the study of what?"
+    }
+  ],
+  "success": true,
+  "total_questions": 8
+}
+}
+```
+# POST /quizzes
+- Sample ```curl -X POST curl -X POST http://127.0.0.1:5000/quizzes -H "Content-Type: application/json" -d '{"previous_questions": [],"quiz_category":{"type": "Science", "id": "1"}}'```
+- Returns the next question that will be given to the client to the user can answer.
+  The above curl request would output the following:
+  ```
+  {
+  "question": {
+    "answer": "amazon",
+    "category": "1",
+    "difficulty": 2,
+    "id": 32,
+    "question": "who is evil"
+  },
+  "success": true
+}
+  ```
+
+
 ## Deployment N/A
 
 ## Authors
