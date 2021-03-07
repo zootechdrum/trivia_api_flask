@@ -182,7 +182,6 @@ def create_app(test_config=None):
         search_obj = request.get_json()
         search_term = search_obj['searchTerm']
 
-
         questions = Question.query.filter(
             Question.question.ilike(
                 "%" + search_term + "%")).all()
@@ -190,7 +189,6 @@ def create_app(test_config=None):
         if search_term == '':
             question = Question.query.all()
         formatted_questions = [question.format() for question in questions]
-
 
         return jsonify({
             'success': True,
