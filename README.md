@@ -17,13 +17,13 @@ flask run
 
 These commands put the application in development and directs our application to use <mark>__init__.py</mark> file in our flaskr folder. One of the advantages of working in dev mode is that the server will restart whenever you have made changes and saved changes to your application. 
 
-The application is run on <mark>http://127.0.0.1:5000/<mark>
+The application is run on http://127.0.0.1:5000/
 
 ### Frontend
 
 From the frontend folder, run the following commands to start the client:
 
-npm install // run this once to install dependencies
+npm install  *run this once to install dependencies*
 
 npm start
 
@@ -38,7 +38,15 @@ createdb trivia_test
 psql trivia_test < trivia.psql
 python test_flaskr.py
 
-<span style="color:blue">The first time you run the tests, omit the dropdb command</span>
+:exclamation: The first time you run the tests, omit the dropdb command :exclamation:
+
+## API Reference
+
+ ### Getting Started
+ - Authentication: This application does require any authentication for user keys.
+ - This app can only run locally and is not hosted anywhere. The backend app is hosted at the default http://127.0.0.1:5000/, which is set as a proxy in the frontend configuration.
+
+## Error Handling
 
 
 ## Deployment N/A
